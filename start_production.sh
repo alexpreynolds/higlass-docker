@@ -4,10 +4,15 @@ set -v
 
 # Docker image is pinned here, so that you can checkout older
 # versions of this script, and get reproducible deployments.
-DOCKER_VERSION=v0.0.18
+DOCKER_VERSION=v0.2.60
 IMAGE=gehlenborglab/higlass:$DOCKER_VERSION
 STAMP=`date +"%Y-%m-%d_%H-%M-%S"`
-PORT=0
+
+# TODO: Need to think about open ports and security -- we're just testing things out for now
+PORT=80
+
+# Get the EC2 instance's public IP programmatically to avoid hard-coding it into a public Github repo
+SITE_URL=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`
 
 # NOTE: No parameters should change the behavior in a deep way:
 # We want the tests to cover the same setup as in production.
@@ -68,7 +73,8 @@ docker run --name container-$STAMP-with-redis \
            --env REDIS_PORT=6379 \
            --detach \
            --publish-all \
+	   --expose SITE_URL=$SITE_URL \
            $IMAGE
 
 # make the demo the main page
-# docker exec -it container-$STAMP-with-redis cp higlass-website/demo.html higlass-website/index.html
+docker exec -it container-$STAMP-with-redis cp higlass-website/demo.html higlass-website/index.html
