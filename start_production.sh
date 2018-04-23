@@ -12,7 +12,7 @@ STAMP=`date +"%Y-%m-%d_%H-%M-%S"`
 PORT=80
 
 # Get the EC2 instance's public IP programmatically to avoid hard-coding it into a public Github repo
-SITE_URL=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`
+SITE_URL=`curl -s http://169.254.169.254/latest/meta-data/public-hostname`
 
 # NOTE: No parameters should change the behavior in a deep way:
 # We want the tests to cover the same setup as in production.
