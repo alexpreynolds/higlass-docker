@@ -73,7 +73,7 @@ docker run --name container-$STAMP-with-redis \
            --env REDIS_PORT=6379 \
            --detach \
            --publish-all \
-	   --expose SITE_URL=$SITE_URL \
+	   -e SITE_URL=$SITE_URL \
            $IMAGE
 
 # make the demo the main page
