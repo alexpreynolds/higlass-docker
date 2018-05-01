@@ -4,8 +4,8 @@ set -v
 
 # Docker image is pinned here, so that you can checkout older
 # versions of this script, and get reproducible deployments.
-DOCKER_VERSION=v0.2.60
-IMAGE=gehlenborglab/higlass:$DOCKER_VERSION
+DOCKER_VERSION=latest
+IMAGE=alexpreynolds/higlass-develop-docker:$DOCKER_VERSION
 STAMP=`date +"%Y-%m-%d_%H-%M-%S"`
 
 # TODO: Need to think about open ports and security -- we're just testing things out for now
