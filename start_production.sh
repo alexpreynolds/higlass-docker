@@ -18,7 +18,7 @@ SITE_URL=`curl -s http://169.254.169.254/latest/meta-data/public-hostname`
 # We want the tests to cover the same setup as in production.
 
 usage() {
-  echo "USAGE: $0 [-i IMAGE] [-s STAMP] [-p PORT] [-v VOLUME]" >&2
+  echo "USAGE: $0 [-i IMAGE] [-s STAMP] [-p PORT] [-v VOLUME] [-w WORKERS]" >&2
   exit 1
 }
 
@@ -36,6 +36,9 @@ while getopts 'i:s:p:v:' OPT; do
     v)
       VOLUME=$OPTARG
       ;;
+    w)
+      WORKERS=$OPTARG
+      ;;
     *)
       usage
       ;;
@@ -44,6 +47,10 @@ done
 
 if [ -z "$VOLUME" ]; then
     VOLUME=/tmp/higlass-docker/volume-$STAMP-with-redis
+fi
+
+if [ -z "$WORKERS" ]; then
+    WORKERS=2
 fi
 
 docker network create --driver bridge network-$STAMP
@@ -73,8 +80,16 @@ docker run --name container-$STAMP-with-redis \
            --env REDIS_PORT=6379 \
            --detach \
            --publish-all \
-	   -e SITE_URL=$SITE_URL \
+	   --env SITE_URL=$SITE_URL \
+	   --env WORKERS=$WORKERS \
            $IMAGE
 
 # make the demo the main page
+docker exec -it container-$STAMP-with-redis cp higlass-website/index.html higlass-website/index.html.backup
 docker exec -it container-$STAMP-with-redis cp higlass-website/demo.html higlass-website/index.html
+
+# export variables for later use
+DVOLUME=${VOLUME}
+CONTAINER=container-${STAMP}-with-redis
+export DVOLUME
+export CONTAINER
